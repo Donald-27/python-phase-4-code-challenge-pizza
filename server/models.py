@@ -59,10 +59,17 @@ class RestaurantPizza(db.Model, SerializerMixin):
     price = db.Column(db.Integer, nullable=False)
 
     # add relationships
+     pizza = relationship("Pizza", back_populates="restaurant_pizzas")
+    restaurant = relationship("Restaurant", back_populates="restaurant_pizzas")
+
 
     # add serialization rules
 
+      serialize_rules = ("-pizza.restaurant_pizzas", "-restaurant.restaurant_pizzas")
+
+
     # add validation
+    
 
     def __repr__(self):
         return f"<RestaurantPizza ${self.price}>"
