@@ -33,7 +33,6 @@ def index():
 class Restaurants(Resource):
     def get(self):
         restaurants = Restaurant.query.all()
-        # exclude restaurant_pizzas (handled by serialize_rules)
         return [r.to_dict() for r in restaurants], 200
 
 class RestaurantByID(Resource):
@@ -41,7 +40,6 @@ class RestaurantByID(Resource):
         restaurant = db.session.get(Restaurant, id)
         if not restaurant:
             return {"error": "Restaurant not found"}, 404
-        # Include restaurant_pizzas with nested pizza details
         return restaurant.to_dict(rules=("restaurant_pizzas", "restaurant_pizzas.pizza")), 200
 
     def delete(self, id):
@@ -73,8 +71,6 @@ class RestaurantPizzas(Resource):
 
             db.session.add(new_rp)
             db.session.commit()
-
-            # Return full nested object with pizza and restaurant details
             return new_rp.to_dict(rules=("pizza", "restaurant")), 201
 
         except Exception:
