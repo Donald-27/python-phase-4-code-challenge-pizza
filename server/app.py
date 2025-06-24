@@ -5,21 +5,16 @@ from flask_restful import Api, Resource
 from models import db, Restaurant, RestaurantPizza, Pizza
 import os
 
-# Setup database path
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
-
-# App and DB config
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.json.compact = False
 
-# Init DB and migration
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# Init API
 api = Api(app)
 
 @app.route("/")
