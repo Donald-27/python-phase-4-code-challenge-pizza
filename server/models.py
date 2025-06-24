@@ -10,6 +10,7 @@ metadata = MetaData(
     }
 )
 
+# Initialize SQLAlchemy with custom metadata
 db = SQLAlchemy(metadata=metadata)
 
 
@@ -20,12 +21,13 @@ class Restaurant(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
     address = db.Column(db.String, nullable=False)
 
-    # relationships
+    # Relationships
     restaurant_pizzas = db.relationship(
         "RestaurantPizza", backref="restaurant", cascade="all, delete-orphan"
     )
     pizzas = association_proxy("restaurant_pizzas", "pizza")
 
+    # Serialization rules
     serialize_rules = ("-restaurant_pizzas",)
 
     def __repr__(self):
@@ -39,12 +41,13 @@ class Pizza(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
     ingredients = db.Column(db.String, nullable=False)
 
-    # relationships
+    # Relationships
     restaurant_pizzas = db.relationship(
         "RestaurantPizza", backref="pizza", cascade="all, delete-orphan"
     )
     restaurants = association_proxy("restaurant_pizzas", "restaurant")
 
+    # Serialization rules
     serialize_rules = ("-restaurant_pizzas",)
 
     def __repr__(self):
@@ -60,12 +63,14 @@ class RestaurantPizza(db.Model, SerializerMixin):
     pizza_id = db.Column(db.Integer, db.ForeignKey("pizzas.id"), nullable=False)
     restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurants.id"), nullable=False)
 
+    # Serialization rules
     serialize_rules = ("-pizza.restaurant_pizzas", "-restaurant.restaurant_pizzas")
 
+    # Validation
     @validates("price")
     def validate_price(self, key, value):
         if not (1 <= value <= 30):
-            raise ValueError("Price must be between 1 and 30")
+            raise ValueError("Price must be between 1 and 30.")
         return value
 
     def __repr__(self):
